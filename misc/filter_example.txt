@@ -1,0 +1,7 @@
+- *.tsv
+- /derivatives/
++ /**/anat/
+- /**/func/
+- /**/fmap/
+- /**/dwi/
+- *VNav*

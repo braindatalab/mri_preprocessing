@@ -23,11 +23,10 @@ In the case of the HBN project, the MRI data was downloaded to PTB workstation e
 
 ### Rclone
 
-After installation, first create a new configuration for a remote resource with the command `rclone config` and then select option `n) New remote`. For the HBN S3 bucket, the following configuration details need to be specified:
+After installation, first create a new configuration for a remote resource with the command `rclone config` and then select option `n) New remote`. For the HBN S3 bucket, the following configuration details need to be specified (the name can be chosen arbitrarily):
 
 ```bash
-# Configuration details
-name = hbn-remote # name can be chosen arbitrarily
+name = hbn-remote
 type = s3
 provider = AWS
 region = us-east-1
@@ -35,34 +34,26 @@ acl = private
 endpoint = s3.amazonaws.com
 ```
 
-To copy files from the remote resource, use the command `rclone copy`. This command can be used with the [filtering](https://rclone.org/filtering/) option  `--filter-from` to link to a filter file. This file is a simple txt file where patterns to be excluded are indicated by lines starting with `-`, and patterns to be included by lines starting with `+`.
+To copy files from the remote resource, use the command `rclone copy`. This command can be used with the [filtering](https://rclone.org/filtering/) option  `--filter-from` to link to a filter file. This file is a simple [text file](misc/filter_example.txt) where patterns to be excluded are indicated by lines starting with `-`, and patterns to be included by lines starting with `+`.
 
 ```bash
 # Rclone copy
 rclone copy hbn-remote:/fcp-indi/data/Projects/HBN/MRI/Site-SI /scratch/hbnetdata/MRI/
-
+```
+```bash
 # Rclone copy with --filter-from option
 rclone copy --filter-from=~/filter.txt remote:/fcp-indi/data/Projects/HBN/MRI/Site-SI /scratch/hbnetdata/MRI/
-
-# filter arguments -> save lines in txt file (e.g. filter.txt)
-- *.tsv
-- /derivatives/
-+ /**/anat/
-- /**/func/
-- /**/fmap/
-- /**/dwi/
-- *VNav*
 ```
 
 In the case of the HBN project, the shell script [`download_script.sh`](scripts/download_script.sh) was used to start 4 concurrent `rclone copy` threads, one for each site.
+
 ## Setting up Docker
 
-The sMRIprep pipeline is provided as a Docker image. In order to run the pipeline, Docker needs to be installed. Due to security reasons, only the [rootless version of Docker](https://docs.docker.com/engine/security/rootless/) can be installed on PTB workstations. In that case, it might be necessary to change the proxy settings of the default configuration of Docker so that it can connect to the internet, which is required for pulling images from Docker Hub.
+The sMRIprep pipeline is provided as a [Docker image](https://hub.docker.com/r/nipreps/smriprep/tags/). In order to run the pipeline, [Docker](https://www.docker.com/products/docker-desktop/) needs to be installed. Due to security reasons, only the [rootless version of Docker](https://docs.docker.com/engine/security/rootless/) can be installed on PTB workstations. In that case, it might be necessary to change the proxy settings of the default configuration of Docker so that it can connect to the internet, which is required for pulling images from Docker Hub.
 
 Once Docker is running, the image of the pipeline needs to be downloaded with the command `docker pull nipreps/smriprep:latest`. Then the pipeline can be started as a Docker container instance using the `docker run` command, which is quite comprehensive:
 
 ```bash
-# Start pipeline with docker run command
 docker run --rm \
 	-v /scratch/hbnetdata/MRI:/data:ro \
 	-v /scratch/hbnetdata/derivatives:/output \
@@ -71,7 +62,7 @@ docker run --rm \
 	nipreps/smriprep:latest \
 	/data /output \
 	participant \
-	--participant-label sub-NDAR******** \
+	--participant-label sub-NDARxxxxxxxx \
 	--nprocs 4 \
 	--omp-nthreads 8 \
 	--mem-gb 8 \
@@ -83,7 +74,7 @@ The `-v` option for the `docker run` command is used to [bind-mount](https://uni
 
 The lines following `nipreps/smriprep:latest \` are commands and arguments for the actual container instance, i.e. the pipeline. There are 3 positional arguments that need to be specified: `bids_dir`, `output_dir` and `analysis_level`. Here the `bids_dir` is set to `/data`, which is mapped to `/MRI` containing the raw participant data. The `output_dir` is set to `/output`, which is mapped to `/derivatives`. The `analysis_level` is set to `participant`, which is the default preprocessing mode.  
 
-==A container instance should only be assigned one single subject==. Assigning multiple subjects results in performance drops and a longer duration per subject, and it can even lead to blocking the entire pipeline. The latter is the case when one subject in the queue takes extremely long to preprocess or does not terminate at all. 
+A container instance should only be assigned one single subject. Assigning multiple subjects results in performance drops and a longer duration per subject, and it can even lead to blocking the entire pipeline. The latter is the case when one subject in the queue takes extremely long to preprocess or does not terminate at all. 
 
 The options `--nprocs`, `omp-nthreads` and `--mem-gb` specify what hardware resources are allocated to the container. After running performance tests, it was observed that 4 (logical) CPU cores, 8 threads and 8 GB of RAM per container delivered the best results with respect to duration.
 
@@ -95,28 +86,34 @@ Useful Docker commands and options:
 ```bash
 # Get system-wide information
 docker info
-
+```
+```bash
 # Automatically remove the container when it exits
 docker run --rm  
-
+```
+```bash
 # Allocate a pseudo-TTY connected to the container's stdin; creating an interactive `bash` shell in the container.
 docker run --it
-
+```
+```bash
 # Run container in background and print container ID; results in stdout stream from container not being shown in shell
 docker run --detach
-
+```
+```bash
 # List containers
 docker ps
 docker ps -f "status=exited"
-
+```
+```bash
 # Display a live stream of container(s) resource usage statistics
 docker stats
-
+```
+```bash
 # Stop and remove container
-
 docker container stop [OPTIONS] CONTAINER [CONTAINER...]
 docker rm [OPTIONS] CONTAINER [CONTAINER...]
-
+```
+```bash
 # Remove image
 docker image rm [OPTIONS] IMAGE [IMAGE...]
 ```
@@ -132,18 +129,22 @@ The shell script [`add-jobs.sh`](scripts/add_jobs.sh) was used to add jobs to th
 
 Useful Task Spooler commands:
 ```bash
-# Start task spooler application and/or show current state of queue
+# Start task spooler application and/or show overview
 ts
-
+```
+```bash
 # Specify number of jobs running in parallel
 ts -S 60
-
-# Get information about specific job with id (integer)
-ts -i 0
-
+```
+```bash
+# Get information for specific job with id
+ts -i 1
+```
+```bash
 # Clear list of finished tasks (does not reset index)
 ts -C 
-
+```
+```bash
 # Kill ts scheduler (does reset index when starting ts again)
 ts -K 
 ```
@@ -159,10 +160,12 @@ Other useful shell commands:
 ```bash
 # Find all subjects that have (smriprep report) html file and store ids in txt file
 ls *.html | awk -F '.' '{print $1}' | awk -F '-' '{print $2}' > html-subjects.txt
-
+```
+```bash
 # Delete subject directories given file with subject ids
 cat subjects_2_exclude.txt | awk '{print "/scratch/hbnetdata/MRI/sub-" $0}' | xargs -I{} rm -r{}
-
+```
+```bash
 # List subjects where ts job terminated with return code 1 (assuming jobs are listed in ts queue)
 ts | grep -E '^.*\s{3}1\s{3}.*$' | awk -F ' ' '{print $1}' | xargs -I{} ts -i {} | grep -oP '(--participant-label )\w+' | awk -F ' ' '{print $2}'
 ```

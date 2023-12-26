@@ -170,4 +170,6 @@ cat subjects_2_exclude.txt | awk '{print "/scratch/hbnetdata/MRI/sub-" $0}' | xa
 ts | grep -E '^.*\s{3}1\s{3}.*$' | awk -F ' ' '{print $1}' | xargs -I{} ts -i {} | grep -oP '(--participant-label )\w+' | awk -F ' ' '{print $2}'
 ```
 
-FreeSurfer-related statistics can be retrieved with shell script [`freesurfer_stats_retrieval.sh`](scripts/freesurfer_stats_retrieval.sh).
+## Additional points
+
+- Once the preprocessing has finished, it is possible to retrieve FreeSurfer-related statistics in CSV format with the shell script [`freesurfer_stats_retrieval.sh`](scripts/freesurfer_stats_retrieval.sh)

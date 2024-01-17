@@ -4,7 +4,7 @@
 file=$1
 
 source_path="/scratch/hbndetdata/MRI/derivatives/sMRIprep"
-target_path="/scratch/hbndetdata/MRI/images"
+target_path="/scratch/hbndetdata/brain-images"
 
 declare -a files=(\
 "_acq-HCP_desc-brain_mask.nii.gz"\

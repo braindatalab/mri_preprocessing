@@ -153,7 +153,7 @@ ts -K
 
 The preprocessing operation can be monitored using the `ts` command, which shows a list consisting of jobs currently running and those still left in the queue. For details on specific jobs, use the `ts -i` command. In addition to that, the `docker ps` command can be used to list all active containers and see how long they have been running. 
 
-While a subject took on average 8-10 hours to preprocess with the given hardware as part of the HBN project, some subjects can take very long (multiple days) to finish, which results in blocking computing resources for a longer period of time and slowing down the overall operation. The reason for this is low-quality imaging data, which can be related to head motion or other acquisition-related factors. To mitigate this problem, one can introduce a *policy* that can be implemented in a manual or automatic way.
+While a single subject took on average 8-10 hours to preprocess with the given hardware as part of the HBN project, some subjects can take very long (multiple days) to finish, which results in blocking computing resources for a longer period of time and slowing down the overall operation. The reason for this is low-quality imaging data, which can be related to head motion or other acquisition-related factors. To mitigate this problem, one can introduce a *policy* that can be implemented in a manual or automatic way.
 
 One such *policy* can be to discard jobs that have been running for more than a fixed amount of time. One can use the `docker ps` command to detect affected containers and discard them using the `docker stop [container]` command, resulting in the corresponding job terminating with an exit code of `-119`. This procedure can be automated with a cron job.
 

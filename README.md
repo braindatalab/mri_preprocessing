@@ -27,7 +27,7 @@ In the case of the HBN project, the MRI data was downloaded to PTB workstation e
 After installation, first create a new configuration for a remote resource with the command `rclone config` and then select option `n) New remote`. For the HBN S3 bucket, the following configuration details need to be specified (the name can be chosen arbitrarily):
 
 ```bash
-name = hbn-remote
+name = remote
 type = s3
 provider = AWS
 region = us-east-1
@@ -39,7 +39,7 @@ To copy files from the remote resource, use the command `rclone copy`. This comm
 
 ```bash
 # Rclone copy
-rclone copy hbn-remote:/fcp-indi/data/Projects/HBN/MRI/Site-SI /scratch/hbnetdata/MRI/
+rclone copy remote:/fcp-indi/data/Projects/HBN/MRI/Site-SI /scratch/hbnetdata/MRI/
 ```
 ```bash
 # Rclone copy with --filter-from option

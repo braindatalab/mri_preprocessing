@@ -20,7 +20,7 @@ The MRI and EEG data of the [HBN dataset](http://fcon_1000.projects.nitrc.org/in
 
 To visually inspect the data on the S3 bucket a GUI-based file-browser like [Cyberduck](https://cyberduck.io/) can be used. For the actual download, it is more convenient to use a cli-based tool like [Rclone](https://rclone.org/).
 
-In the case of the HBN project, the MRI data was downloaded to PTB workstation e84460 under `/scratch/hbnetdata/MRI`. As a result, the folder `MRI` contained all downloaded  participant folders. The folder structure within a participant folder is compliant with the [BIDS](https://bids-specification.readthedocs.io/en/stable/index.html) standard.
+In the case of the HBN project, the MRI data was downloaded to PTB workstation e84460 under `/scratch/hbnetdata/MRI`. As a result, the folder `MRI` contained all downloaded  participant folders. The downloaded data is compliant with the [BIDS](https://bids-specification.readthedocs.io/en/stable/index.html) standard.
 
 ### Rclone
 
@@ -52,7 +52,7 @@ In the case of the HBN project, the shell script [`download_script.sh`](scripts/
 
 The sMRIprep pipeline is provided as a [Docker image](https://hub.docker.com/r/nipreps/smriprep/tags/). In order to run the pipeline, [Docker](https://www.docker.com/products/docker-desktop/) needs to be installed. Due to security reasons, only the [rootless version of Docker](https://docs.docker.com/engine/security/rootless/) can be installed on PTB workstations. In that case, it might be necessary to change the proxy settings of the default configuration of Docker so that it can connect to the internet, which is required for pulling images from Docker Hub.
 
-Once Docker is running, the image of the pipeline needs to be downloaded with the command `docker pull nipreps/smriprep:latest`. Then the pipeline can be started as a Docker container instance using the `docker run` command, which is quite comprehensive:
+Once Docker is running, the image of the pipeline needs to be downloaded with the command `docker pull nipreps/smriprep:latest`. Then the pipeline can be started as a Docker container instance using the `docker run` command:
 
 ```bash
 docker run --rm \

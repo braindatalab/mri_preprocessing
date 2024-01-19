@@ -77,7 +77,7 @@ The lines following `nipreps/smriprep:latest \` are commands and arguments for t
 
 A container instance should only be assigned one single subject. Assigning multiple subjects results in performance drops and a longer duration per subject, and it can even lead to blocking the entire pipeline. The latter is the case when one subject in the queue takes extremely long to preprocess or does not terminate at all. 
 
-The options `--nprocs`, `omp-nthreads` and `--mem-gb` specify what hardware resources are allocated to the container. After running performance tests, it was observed that 4 (logical) CPU cores, 8 threads and 8 GB of RAM per container delivered the best results with respect to duration.
+The options `--nprocs`, `--omp-nthreads` and `--mem-gb` specify what hardware resources are allocated to the container. After running performance tests, it was observed that 4 (logical) CPU cores, 8 threads and 8 GB of RAM per container delivered the best results with respect to duration.
 
 A working directory can be specified with the `--work-dir` option and also needs to be bind-mounted beforehand with the `-v`option as part of the `docker run` command. In practice, when working with a large number of subjects to be preprocessed, the working directory grows rapidly in size and should be emptied periodically.
 

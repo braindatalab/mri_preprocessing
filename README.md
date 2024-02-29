@@ -10,17 +10,17 @@ The documentation is divided into 5 sections:
 4. Monitoring & error handling
 5. Retrieving preprocessed data
 
-Besides the documentation, this repository also contains useful shell scripts. The procedures and tools described here have been applied to MRI brain scans from more than 3600 subjects originating from the [HBN](http://fcon_1000.projects.nitrc.org/indi/cmi_healthy_brain_network/About.html) dataset. This how-to will use the HBN dataset as an example case (referred to as the HBN project).
+Besides the documentation, this repository also contains useful shell scripts. The procedures and tools described here have been applied to T1w images from more than 3600 subjects originating from the [HBN](http://fcon_1000.projects.nitrc.org/indi/cmi_healthy_brain_network/About.html) dataset. This how-to will use the HBN dataset as an example case (referred to as the HBN project).
 
 For functional MRI data, the closely related [fMRIprep](https://fmriprep.org/en/latest/index.html) pipeline can be used. It should be possible to apply the same procedures and tools described here.
 
 ## Downloading data
 
-The MRI and EEG data of the [HBN dataset](http://fcon_1000.projects.nitrc.org/indi/cmi_healthy_brain_network/downloads/downloads_MRI_R1_1.html) is stored on an AWS S3 bucket, where it is organized into folders by participant.
+The MRI and EEG data of the [HBN dataset](http://fcon_1000.projects.nitrc.org/indi/cmi_healthy_brain_network/downloads/downloads_MRI_R1_1.html) is stored on an AWS S3 bucket, where it is organized into folders by participant. All MRI data is compliant with the [BIDS](https://bids-specification.readthedocs.io/en/stable/index.html) specification.
 
 To visually inspect the data on the S3 bucket a GUI-based file-browser like [Cyberduck](https://cyberduck.io/) can be used. For the actual download, it is more convenient to use a cli-based tool like [Rclone](https://rclone.org/).
 
-In the case of the HBN project, the MRI data was downloaded to the directory `/scratch/hbnetdata/MRI`. As a result, the folder `MRI` contained all downloaded  participant folders. The downloaded data is compliant with the [BIDS](https://bids-specification.readthedocs.io/en/stable/index.html) standard.
+In the case of the HBN project, the MRI data was downloaded to the directory `/scratch/hbnetdata/MRI`.
 
 ### Rclone
 
@@ -50,7 +50,7 @@ In the case of the HBN project, the shell script [`download_data.sh`](scripts/do
 
 ## Setting up Docker
 
-The sMRIprep pipeline is provided as a [Docker image](https://hub.docker.com/r/nipreps/smriprep/tags/). In order to run the pipeline, [Docker](https://www.docker.com/products/docker-desktop/) needs to be installed. Due to security reasons, only the [rootless version of Docker](https://docs.docker.com/engine/security/rootless/) can be installed on some workstations. In that case, it might be necessary to change the proxy settings of the default configuration of Docker so that it can connect to the internet, which is required for pulling images from Docker Hub.
+The sMRIprep pipeline is provided as a [Docker image](https://hub.docker.com/r/nipreps/smriprep/tags/). In order to run the pipeline, [Docker](https://www.docker.com/products/docker-desktop/) needs to be installed. In some cases, primarily due to security reasons, the [rootless version of Docker](https://docs.docker.com/engine/security/rootless/) needs to be installed. In that case, it might be necessary to change the proxy settings of the default configuration of Docker so that it can connect to the internet, which is required for pulling images from Docker Hub.
 
 Once Docker is running, the image of the pipeline needs to be downloaded with the command `docker pull nipreps/smriprep:latest`. Then the pipeline can be started as a Docker container instance using the `docker run` command:
 
@@ -77,7 +77,7 @@ The lines following `nipreps/smriprep:latest \` are commands and arguments for t
 
 A container instance should only be assigned one single subject. Assigning multiple subjects results in performance drops and a longer duration per subject, and it can even lead to blocking the entire pipeline. The latter is the case when one subject in the queue takes extremely long to preprocess or does not terminate at all. 
 
-The options `--nprocs`, `--omp-nthreads` and `--mem-gb` specify what hardware resources are allocated to the container. As part of this project, 4 (logical) CPU cores, 8 threads and 8 GB of RAM were used. For future projects, configurations with more threads (16 or 32) should also be compared.
+The options `--nprocs`, `--omp-nthreads` and `--mem-gb` specify what hardware resources are allocated to the container. As part of the HBN project, 4 (logical) CPU cores, 8 threads and 8 GB of RAM were used. For future projects, configurations with more threads (16 or 32) should also be compared.
 
 A working directory can be specified with the `--work-dir` option and also needs to be bind-mounted beforehand with the `-v`option as part of the `docker run` command. In practice, when working with a large number of subjects to be preprocessed, the working directory grows rapidly in size and should be emptied periodically.
 
